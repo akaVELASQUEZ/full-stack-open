@@ -7,6 +7,26 @@ const Button = ({handleClick, text}) => {
   )
 }
 
+const Anecdote = ({anecdote}) => {
+  console.log(anecdote)
+  return (
+    <p>{anecdote}</p>
+  )
+}
+
+const Vote = ({count}) => {
+  console.log(count)
+  return (
+    <p>has {count} votes</p>
+  )
+}
+
+const Heading = ({text}) => {
+  console.log(text)
+  return (
+    <h1>{text}</h1>
+  )
+}
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -29,7 +49,6 @@ const App = () => {
     )
   }
 
-  
   const voting = () => {
     const points = allvotes
     const copy = [...points]
@@ -39,12 +58,20 @@ const App = () => {
     )
   }
 
+  const highest_vote = Math.max(...allvotes)
+  const highest_index = allvotes.indexOf(highest_vote)
+  const highest_anecdote = anecdotes[highest_index]
+
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {allvotes[selected]} votes</p>
+      <Heading text="Anecdote of the day" />
+      <Anecdote anecdote={anecdotes[selected]} />
+      <Vote count={allvotes[selected]} />
       <Button handleClick={voting} text="Vote"/>
       <Button handleClick={random_int} text="Next Anecdote"/>
+      <Heading text="Anecdote with most votes" />
+      <Anecdote anecdote={highest_anecdote} />
+      <Vote count={highest_vote} />
     </div>
   )
 }

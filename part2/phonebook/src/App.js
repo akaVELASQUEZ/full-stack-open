@@ -2,10 +2,15 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', id: 1, number: "09115522411" }
-  ]) 
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ])
+
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [search1, setSearch1] = useState('')
   
 
   const addPerson = (e) => {
@@ -47,20 +52,30 @@ const numChange = (e) => {
   )
 }
 
+const searchType = e => {
+  console.log(e.target.value)
+  console.log(persons.filter(element => element.name.includes(search1)))
+  return (
+    setSearch1(e.target.value)
+  )
+}
+
   return (
     <div>
       <h2>Phonebook</h2>
+       filter shown with <input value={search1} onChange={searchType} />
       <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={nameChange}/>
-          number: <input value={newNumber} onChange={numChange}/>
+          <h1>Add New</h1>
+          <p>name: <input value={newName} onChange={nameChange}/></p>
+          <p>number: <input value={newNumber} onChange={numChange}/></p>
         </div>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map((person) => {
+      {persons.filter((element) => element.name.includes(search1)).map((person) => {
         return (
           <p key={person.id} >{person.name}   {person.number}</p>
         )

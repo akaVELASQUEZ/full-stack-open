@@ -2,17 +2,26 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter.js'
 
-const Result = ({countries, search}) => {
-    const searchResult = countries.filter((element) => element.name.common.includes(search))
+const Result = ({countries, search, setSearch}) => {
+    console.log(search)
+    const searchResult = countries.filter((element) => element.name.common.toLowerCase().includes(search.toLowerCase()))
     console.log(searchResult)
     console.log(searchResult.length)
     if (searchResult.length < 10 && searchResult.length > 1) {
         console.log("1")
         return (
             <>
-                {countries.filter((element) => element.name.common.includes(search)).map((country) => 
-                    <p key={country.ccn3} >{country.name.common}</p>
-                )}
+                {searchResult.map((country) => {
+                    console.log(country)
+                    return (
+                        < div key={country.ccn3}>
+                         {country.name.common}  
+                         <button onClick={() => {
+                            setSearch(country.name.common)
+                         }}>Show</button>
+                        </div>
+                    )
+                })}
             </>
         )
     } else if (searchResult.length > 10) {
@@ -59,6 +68,7 @@ const App = () => {
       }, [])
 
 
+
     const searchType = e => {      
         console.log(e.target.value)
         console.log(countries.filter(element => element.name.common.includes(search)))
@@ -71,7 +81,7 @@ const App = () => {
     return (
         <>
             <Filter search={search} handleSearch={searchType} />
-            <Result countries={countries} search={search} />
+            <Result countries={countries} search={search} setSearch={setSearch}/>
         </>
     )
 }

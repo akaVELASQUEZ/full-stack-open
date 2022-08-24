@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter.js'
 import PersonForm from './components/PersonForm.js'
 import Persons from './components/Persons.js'
@@ -11,6 +10,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search1, setSearch1] = useState('')
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -51,8 +51,32 @@ const App = () => {
     }
   }
 
+
+const deletePerson = (e) => {
+  console.log(e.target.value)
+  const value = parseInt(e.target.value)
+  personService
+    .getOne(value)
+    .then(response => {
+      console.log(response.data)
+      return (
+        setMessage(`Delete ${response.data.name}`)
+      )
+    })
+  console.log(message)
+  if (window.confirm(message)) {
+    personService
+      .delPerson(value)
+      .then(() => {
+        setPersons(persons.filter((element) => element.id !== value ))
+      })
+    
+  }
+}
+
 const nameChange = (e) => {
   console.log(e.target.value)
+  
   return (
     setNewName(e.target.value)
   )
@@ -88,7 +112,7 @@ const searchType = e => {
       />
       
       <h2>Numbers</h2>
-      <Persons persons={persons} search={search1} />
+      <Persons persons={persons} search={search1} deletePerson={deletePerson} />
     </div>
   )
 }

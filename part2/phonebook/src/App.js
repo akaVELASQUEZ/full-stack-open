@@ -10,7 +10,6 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search1, setSearch1] = useState('')
-  const [message, setMessage] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -28,7 +27,6 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
     }
   
     console.log(personObject)
@@ -36,10 +34,20 @@ const App = () => {
     console.log(personObject.name)
     console.log(newName)
     if (persons.some(element => element.name === personObject.name)) {
-      console.log("false")
-      alert(`${newName} is already in phonebook`)
-      setNewName("")
-      setNewNumber("")
+      if (window.confirm(`${newName} is already in phonebook, replace the old number with a new one?`)) {
+        const person = persons.find((element) => element.name === newName)
+        const personChange = {...person, number: personObject.number}
+        console.log(personChange)
+        personService
+          .update(personChange.id, personChange)
+          .then(response => {
+            console.log(response.data)
+            setPersons(persons.map((person) => person.id !== personChange.id ? person : response.data))
+            setNewName("")
+            setNewNumber("")
+          })
+      }
+      
     } else {
       personService
       .create(personObject)
@@ -55,15 +63,8 @@ const App = () => {
 const deletePerson = (e) => {
   console.log(e.target.value)
   const value = parseInt(e.target.value)
-  personService
-    .getOne(value)
-    .then(response => {
-      console.log(response.data)
-      return (
-        setMessage(`Delete ${response.data.name}`)
-      )
-    })
-  console.log(message)
+  const person = persons.find((element) => element.id === value)
+  const message = `Delete ${person.name}`
   if (window.confirm(message)) {
     personService
       .delPerson(value)

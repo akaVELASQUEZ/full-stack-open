@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter.js'
 
-const Result = ({countries, search, setSearch}) => {
+const Result = ({search, setSearch, weather, api_key, searchResult, isLoading}) => {
+    
+    console.log(weather)
     console.log(search)
-    const searchResult = countries.filter((element) => element.name.common.toLowerCase().includes(search.toLowerCase()))
+    
     console.log(searchResult)
     console.log(searchResult.length)
+    
     if (searchResult.length < 10 && searchResult.length > 1) {
         console.log("1")
         return (
@@ -32,6 +35,9 @@ const Result = ({countries, search, setSearch}) => {
     } else if (searchResult.length === 1) {
         console.log("3")
         console.log(searchResult[0].name.common)
+        if (isLoading) {
+            return <div className="App">Loading...</div>
+        }
         return (
             <>
                 <h1>{searchResult[0].name.common}</h1>
@@ -50,25 +56,42 @@ const Result = ({countries, search, setSearch}) => {
                 </ul>
                 <br/>
                 <img src={searchResult[0].flags.png} alt="flag"/>
+                <h2>Weather in {searchResult[0].capital}</h2>
+                <p>Temperature: {weather.main.temp - 273.15} Celcius</p>
+                <img src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="icon" />
+                <p>Wind: {weather.wind.speed} m/s</p>
             </>
         )
     }
 }
 
 const App = () => {
+    const [isLoading, setLoading] = useState(true);
     const [countries, setCountries] = useState([])
     const [search, setSearch] = useState('')
     useEffect(() => {
         axios
           .get('https://restcountries.com/v3.1/all')
           .then(response => {
-            console.log('promise fulfilled')
+            console.log('country promise fulfilled')
             setCountries(response.data)
           })
       }, [])
 
+    const searchResult = countries.filter((element) => element.name.common.toLowerCase().includes(search.toLowerCase()))
 
-
+    const [weather, setWeather] = useState([])
+    useEffect(() => {
+        if (searchResult.length === 1) {
+        axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${searchResult[0].capital},${searchResult[0].name.common}&APPID=bc437fdc41e5013c0a162890342210bc`)
+            .then(response => {
+                console.log('weather promise fulfilled')
+                setWeather(response.data)
+                setLoading(false)
+            })
+        }}
+    )
+    
     const searchType = e => {      
         console.log(e.target.value)
         console.log(countries.filter(element => element.name.common.includes(search)))
@@ -78,10 +101,15 @@ const App = () => {
         )
     }
 
+    const api_key = process.env.REACT_APP_API_KEY
+
+    
+
     return (
         <>
             <Filter search={search} handleSearch={searchType} />
-            <Result countries={countries} search={search} setSearch={setSearch}/>
+            <Result countries={countries} search={search} setSearch={setSearch} 
+            setWeather={setWeather} weather={weather} api_key={api_key} searchResult={searchResult} isLoading={isLoading}/>
         </>
     )
 }

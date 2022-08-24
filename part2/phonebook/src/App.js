@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [search1, setSearch1] = useState('')
   const [notification, setNotification] = useState(null)
+  const [classname, setClassname] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -48,6 +49,14 @@ const App = () => {
             setNewName("")
             setNewNumber("")
           })
+          .catch(error => {
+              console.log(error)
+              setClassname('error')
+              setNotification(`Information of ${personChange.name} has already been removed from the server`)
+              setTimeout(() => {
+                setNotification(null)
+              }, 5000)
+          })
       }
       
     } else {
@@ -57,6 +66,7 @@ const App = () => {
         setPersons(persons.concat(response.data))
         setNewName("")
         setNewNumber("")
+        setClassname('confirm')
         setNotification(
           `Added '${newName}'`
         )
@@ -109,7 +119,7 @@ const searchType = e => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} />
+      <Notification message={notification} classname={classname} />
       <Filter search={search1} handleSearch={searchType} />
 
       <h1>Add New</h1>

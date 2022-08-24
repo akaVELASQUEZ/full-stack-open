@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Filter from './components/Filter.js'
 
-const Result = ({search, setSearch, weather, api_key, searchResult, isLoading}) => {
+const Result = ({search, setSearch, weather, searchResult, isLoading}) => {
     
     console.log(weather)
     console.log(search)
@@ -83,7 +83,7 @@ const App = () => {
     const [weather, setWeather] = useState([])
     useEffect(() => {
         if (searchResult.length === 1) {
-        axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${searchResult[0].capital},${searchResult[0].name.common}&APPID=bc437fdc41e5013c0a162890342210bc`)
+        axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${searchResult[0].capital},${searchResult[0].name.common}&APPID=${process.env.REACT_APP_API_KEY}`)
             .then(response => {
                 console.log('weather promise fulfilled')
                 setWeather(response.data)
@@ -101,15 +101,11 @@ const App = () => {
         )
     }
 
-    const api_key = process.env.REACT_APP_API_KEY
-
-    
-
     return (
         <>
             <Filter search={search} handleSearch={searchType} />
             <Result countries={countries} search={search} setSearch={setSearch} 
-            setWeather={setWeather} weather={weather} api_key={api_key} searchResult={searchResult} isLoading={isLoading}/>
+            setWeather={setWeather} weather={weather} searchResult={searchResult} isLoading={isLoading}/>
         </>
     )
 }
